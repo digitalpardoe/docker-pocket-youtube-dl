@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+
+require 'net/http'
+require 'uri'
+require 'json'
+
+lock_file = File.open("/tmp/pocket-youtube-dl.local", File::CREAT)
+lock_state = lock_file.flock(File::LOCK_EX|File::LOCK_NB)
+
+if !lock_state
+  puts "Already running, exiting..."
+  exit
+end
+
+def pocket_request(action, parameters)
+  uri = URI.parse("https://getpocket.com/v3/#{action}")
+
+  header = { 'Content-Type': 'application/json' }
+  parameters = {
+    consumer_key: ENV["POCKET_CONSUMER_KEY"],
+    access_token: ENV["POCKET_ACCESS_TOKEN"]
+  }.merge(parameters)
+
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = true
+
+  request = Net::HTTP::Post.new(uri.request_uri, header)
+  request.body = parameters.to_json
+
+  response = http.request(request)
+
+  JSON.parse(response.body)
+end
+
+begin
+  youtube_urls = pocket_request("get", { domain: "youtube.com" })["list"].collect { |key,value| [key, value["resolved_url"]] }.to_h
+
+  youtube_urls.each do |key,url|
+    result = system("youtube-dl -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best -o '/downloads/%(title)s.%(ext)s' #{url}")
+    if result
+      puts "Finished downloading #{url}!"
+      pocket_request("send", { actions: [ { action: "archive", item_id: key } ] })
+    end
+  end
+ensure
+  lock_file.close
+end
