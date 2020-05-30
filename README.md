@@ -5,6 +5,9 @@ Pocket access token which you can get by following the instructions here: [https
 
 I mostly put this together for automatically pulling videos into Plex on a Synology.
 
+The default configuration attempts to download the highest quality MP4 it can and
+names it as the title of the video.
+
 ## Usage
 
 ```
