@@ -8,10 +8,12 @@ I mostly put this together for automatically pulling videos into Plex on a Synol
 The default configuration attempts to download the highest quality MP4 it can and
 names it as the title of the video.
 
+This image isn't interactive, you won't see much, if any, output when it runs.
+
 ## Usage
 
 ```
-docker create \
+docker run \
   -e POCKET_CONSUMER_KEY=<your-pocket-consumer-key> \
   -e POCKET_ACCESS_TOKEN=<your-pocket-access-token> \
   -v </path/to/downloads/folder>:/downloads \
