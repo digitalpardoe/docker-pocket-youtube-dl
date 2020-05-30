@@ -12,6 +12,9 @@ if !lock_state
   exit
 end
 
+youtube_dl_output_template = ENV["YOUTUBE_DL_OUTPUT_TEMPLATE"] || "%(title)s.%(ext)s"
+youtube_dl_download_format = ENV["YOUTUBE_DL_DOWNLOAD_FORMAT"] || "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"
+
 def pocket_request(action, parameters)
   uri = URI.parse("https://getpocket.com/v3/#{action}")
 
@@ -36,7 +39,7 @@ begin
   youtube_urls = pocket_request("get", { domain: "youtube.com" })["list"].collect { |key,value| [key, value["resolved_url"]] }.to_h
 
   youtube_urls.each do |key,url|
-    result = system("youtube-dl -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best -o '/downloads/%(title)s.%(ext)s' #{url}")
+    result = system("youtube-dl -f #{youtube_dl_download_format} -o '/downloads/#{youtube_dl_output_template}' #{url}")
     if result
       puts "Finished downloading #{url}!"
       pocket_request("send", { actions: [ { action: "archive", item_id: key } ] })
