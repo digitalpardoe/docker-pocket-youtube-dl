@@ -1,4 +1,4 @@
-FROM alpine:3.12
+FROM alpine:edge
 
 RUN apk add --no-cache ruby youtube-dl ffmpeg ruby-json
 
