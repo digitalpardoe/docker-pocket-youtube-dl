@@ -1,6 +1,7 @@
 FROM alpine:3.13
 
-RUN apk add --no-cache ruby youtube-dl ffmpeg ruby-json
+RUN apk add --no-cache ruby ffmpeg ruby-json python3 py3-pip
+RUN pip install --upgrade youtube-dl
 
 ENV POCKET_CONSUMER_KEY=""
 ENV POCKET_ACCESS_TOKEN=""
