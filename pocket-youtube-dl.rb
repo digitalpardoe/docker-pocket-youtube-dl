@@ -36,10 +36,13 @@ def pocket_request(action, parameters)
 end
 
 begin
-  youtube_urls = pocket_request("get", { domain: "youtube.com" })["list"].collect { |key,value| [key, value["resolved_url"]] }.to_h
-  youtube_urls = youtube_urls.merge(pocket_request("get", { domain: "youtu.be" })["list"].collect { |key,value| [key, value["resolved_url"]] }.to_h)
+  video_urls = {}.tap do |h|
+    h.merge!(pocket_request("get", { domain: "youtube.com" })["list"].collect { |key,value| [key, value["resolved_url"]] }.to_h)
+    h.merge!(pocket_request("get", { domain: "youtu.be" })["list"].collect { |key,value| [key, value["resolved_url"]] }.to_h)
+    h.merge!(pocket_request("get", { domain: "twitch.tv" })["list"].collect { |key,value| [key, value["resolved_url"]] }.to_h)
+  end
 
-  youtube_urls.each do |key,url|
+  video_urls.each do |key,url|
     result = system("youtube-dl -f #{youtube_dl_download_format} -o '/downloads/#{youtube_dl_output_template}' #{url}")
     if result
       puts "Finished downloading #{url}!"
