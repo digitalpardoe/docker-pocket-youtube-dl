@@ -1,7 +1,10 @@
-FROM alpine:3.13
+FROM alpine:3.14.1
 
-RUN apk add --no-cache ruby ffmpeg ruby-json python3 py3-pip
-RUN pip install --upgrade youtube-dl
+RUN apk add --no-cache ffmpeg
+RUN apk add --no-cache ruby ruby-json 
+RUN apk add --no-cache python3 py3-pip py3-pycryptodomex py3-websockets py3-mutagen
+
+RUN pip install --upgrade yt-dlp
 
 ENV POCKET_CONSUMER_KEY=""
 ENV POCKET_ACCESS_TOKEN=""

@@ -42,7 +42,7 @@ begin
   video_urls = video_urls.merge(pocket_request("get", { domain: "twitch.tv" })["list"].collect { |key,value| [key, value["resolved_url"]] }.to_h)
 
   video_urls.each do |key,url|
-    result = system("youtube-dl -f #{youtube_dl_download_format} -o '/downloads/#{youtube_dl_output_template}' #{url}")
+    result = system("yt-dlp -f #{youtube_dl_download_format} -o '/downloads/#{youtube_dl_output_template}' #{url}")
     if result
       puts "Finished downloading #{url}!"
       pocket_request("send", { actions: [ { action: "archive", item_id: key } ] })
