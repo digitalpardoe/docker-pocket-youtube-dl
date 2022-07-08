@@ -1,4 +1,4 @@
-FROM alpine:3.14.1
+FROM alpine:3.16
 
 RUN apk add --no-cache ffmpeg
 RUN apk add --no-cache ruby ruby-json 
