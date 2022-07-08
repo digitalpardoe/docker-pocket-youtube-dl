@@ -37,9 +37,10 @@ end
 
 begin
   video_urls = {}
-  video_urls = video_urls.merge(pocket_request("get", { domain: "youtube.com" })["list"].collect { |key,value| [key, value["resolved_url"]] }.to_h)
-  video_urls = video_urls.merge(pocket_request("get", { domain: "youtu.be" })["list"].collect { |key,value| [key, value["resolved_url"]] }.to_h)
-  video_urls = video_urls.merge(pocket_request("get", { domain: "twitch.tv" })["list"].collect { |key,value| [key, value["resolved_url"]] }.to_h)
+  urls = video_urls.merge(pocket_request("get", {})["list"].collect { |key,value| [key, value["given_url"]] }.to_h)
+  video_urls = urls.select { |key,value|
+    value.match(/.*youtube\.com.*/) || value.match(/.*youtu\.be.*/) || value.match(/.*twitch\.com.*/)
+  }
 
   video_urls.each do |key,url|
     result = system("yt-dlp -f #{youtube_dl_download_format} -o '/downloads/#{youtube_dl_output_template}' #{url}")
