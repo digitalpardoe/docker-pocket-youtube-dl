@@ -1,8 +1,21 @@
-FROM alpine:3.16
+FROM ubuntu:jammy
 
-RUN apk add --no-cache ffmpeg
-RUN apk add --no-cache ruby ruby-json 
-RUN apk add --no-cache python3 py3-pip py3-pycryptodomex py3-websockets py3-mutagen
+RUN apt-get update && \
+    apt-get install -qq --no-install-recommends -y \
+      cron \
+      ffmpeg \
+      ruby \
+      ruby-json \
+      python3 \
+      python3-pip \
+      python3-pycryptodome \
+      python3-websockets \
+      python3-mutagen
+
+RUN apt-get clean && apt-get autoclean
+RUN rm -rf /var/lib/apt/lists/*
+
+RUN touch /var/log/cron.log
 
 RUN pip install --upgrade yt-dlp
 
@@ -13,8 +26,11 @@ VOLUME ["/downloads"]
 
 COPY ["pocket-youtube-dl.rb", "/usr/local/bin/pocket-youtube-dl"]
 
-RUN echo '* * * * * /usr/local/bin/pocket-youtube-dl' > /etc/crontabs/root
+ENV PUID=0
+ENV PGID=0
 
-CMD ["/usr/sbin/crond", "-f"]
+COPY ["entrypoint.sh", "/usr/local/bin/entrypoint.sh"]
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 LABEL org.opencontainers.image.source https://github.com/digitalpardoe/docker-pocket-youtube-dl

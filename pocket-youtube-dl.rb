@@ -7,8 +7,10 @@ require 'json'
 lock_file = File.open("/tmp/pocket-youtube-dl.lock", File::CREAT)
 lock_state = lock_file.flock(File::LOCK_EX|File::LOCK_NB)
 
+puts "Checking for new videos in Pocket list..."
+
 if !lock_state
-  puts "Already running, exiting..."
+  puts "Already running, exiting!"
   exit
 end
 
@@ -32,7 +34,12 @@ def pocket_request(action, parameters)
 
   response = http.request(request)
 
-  JSON.parse(response.body)
+  begin
+    JSON.parse(response.body)
+  rescue JSON::ParserError
+    puts "Error parsing JSON response from Pocket API!"
+    exit (0)
+  end
 end
 
 begin
