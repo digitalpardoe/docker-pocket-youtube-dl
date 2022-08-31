@@ -13,6 +13,6 @@ VOLUME ["/downloads"]
 
 COPY ["pocket-youtube-dl.rb", "/usr/local/bin/pocket-youtube-dl"]
 
-CMD ["/usr/local/bin/pocket-youtube-dl"]
+ENTRYPOINT ["/usr/local/bin/pocket-youtube-dl"]
 
 LABEL org.opencontainers.image.source https://github.com/digitalpardoe/docker-pocket-youtube-dl
